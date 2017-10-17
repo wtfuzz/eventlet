@@ -520,3 +520,7 @@ def test_blocking_select_methods_are_deleted():
 
 def test_regular_file_readall():
     tests.run_isolated('regular_file_readall.py')
+
+
+def test_urllib_exception_identity():
+    tests.run_isolated('urllib_exception_identity.py')
