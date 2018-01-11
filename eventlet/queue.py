@@ -46,6 +46,7 @@ import heapq
 import collections
 import traceback
 
+import eventlet
 from eventlet.event import Event
 from eventlet.greenthread import getcurrent
 from eventlet.hubs import get_hub
@@ -143,6 +144,51 @@ class Waiter(object):
             self.greenlet = None
 
 
+class MockCondition(object):
+    def __init__(self, lock=None):
+        self.lock = lock
+        self._e = Event()
+        self._w = 0
+
+    def acquire(self, *args):
+        # self.lock.acquire(*args)
+        pass
+
+    def release(self):
+        # self.lock.release()
+        pass
+
+    def notify(self, n=1):
+        # assert lock
+        self._w -= n
+        self._e.send()
+        eventlet.sleep(0)
+        # It is bad to use private Event._waiters.
+        # I needed to ensure all waiters are notified before resetting event.
+        while self._e._waiters:
+            eventlet.sleep(0)
+        if self._w <= 0:
+            self._e.reset()
+            self._w = 0
+
+    def notify_all(self):
+        # assert lock
+        self.notify(self._w)
+    notifyAll = notify_all
+
+    def wait(self, timeout=None):
+        # assert lock
+        self._w += 1
+        with eventlet.Timeout(timeout, False):
+            self._e.wait()
+
+    def __enter__(self):
+        self.acquire()
+
+    def __exit__(self, typ, val, tb):
+        self.release()
+
+
 class LightQueue(object):
     """
     This is a variant of Queue that behaves mostly like the standard
@@ -166,6 +212,10 @@ class LightQueue(object):
 
     def _init(self, maxsize):
         self.queue = collections.deque()
+        # Half hearted support of Queue.not_{empty,full} API (for compatibility with multiprocessing.pool)
+        # FIXME: implement proper acquire/release blocking, not only notifications
+        self.not_empty = MockCondition()
+        self.not_full = MockCondition()
 
     def _get(self):
         return self.queue.popleft()
@@ -270,6 +320,7 @@ class LightQueue(object):
                 self.putters.discard(waiter)
         else:
             raise Full
+        self.not_empty.notify()
 
     def put_nowait(self, item):
         """Put an item into the queue without blocking.
@@ -292,6 +343,7 @@ class LightQueue(object):
         if self.qsize():
             if self.putters:
                 self._schedule_unlock()
+            self.not_full.notify()
             return self._get()
         elif not block and get_hub().greenlet is getcurrent():
             # special case to make get_nowait() runnable in the mainloop greenlet
@@ -301,6 +353,7 @@ class LightQueue(object):
                 if putter:
                     putter.switch(putter)
                     if self.qsize():
+                        self.not_full.notify()
                         return self._get()
             raise Empty
         elif block:
@@ -310,6 +363,7 @@ class LightQueue(object):
                 self.getters.add(waiter)
                 if self.putters:
                     self._schedule_unlock()
+                self.not_full.notify()
                 return waiter.wait()
             finally:
                 self.getters.discard(waiter)

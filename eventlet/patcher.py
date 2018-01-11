@@ -233,9 +233,13 @@ def monkey_patch(**on):
     # the hub calls into monkey-patched modules.
     eventlet.hubs.get_hub()
 
-    accepted_args = set(('os', 'select', 'socket',
-                         'thread', 'time', 'psycopg', 'MySQLdb',
-                         'builtins', 'subprocess'))
+    accepted_args = frozenset((
+        'builtins', 'os',
+        'MySQLdb', 'psycopg',
+        'multiprocessing',
+        'select', 'socket', 'subprocess',
+        'thread', 'time',
+    ))
     # To make sure only one of them is passed here
     assert not ('__builtin__' in on and 'builtins' in on)
     try:
@@ -274,6 +278,7 @@ def monkey_patch(**on):
         ('MySQLdb', _green_MySQLdb),
         ('builtins', _green_builtins),
         ('subprocess', _green_subprocess_modules),
+        ('multiprocessing', _green_multiprocessing_modules),
     ]:
         if on[name] and not already_patched.get(name):
             modules_to_patch += modules_function()
@@ -452,6 +457,11 @@ def _green_builtins():
         return [('__builtin__' if six.PY2 else 'builtins', builtin)]
     except ImportError:
         return []
+
+
+def _green_multiprocessing_modules():
+    from eventlet.green import multiprocessing
+    return [('multiprocessing.pool', multiprocessing.pool)]
 
 
 def slurp_properties(source, destination, ignore=[], srckeys=None):
