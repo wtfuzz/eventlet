@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basic Usage &#8212; Eventlet 0.21.0 documentation</title>
+    <title>Basic Usage &#8212; Eventlet 0.22.0 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.21.0',
+        VERSION:     '0.22.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="Eventlet Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Eventlet 0.21.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Eventlet 0.22.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -164,7 +164,7 @@ See <a class="reference internal" href="modules/timeout.html#eventlet.timeout.Ti
 
 <dl class="function">
 <dt id="eventlet.listen">
-<code class="descclassname">eventlet.</code><code class="descname">listen</code><span class="sig-paren">(</span><em>addr</em>, <em>family=&lt;AddressFamily.AF_INET: 2&gt;</em>, <em>backlog=50</em><span class="sig-paren">)</span><a class="headerlink" href="#eventlet.listen" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">eventlet.</code><code class="descname">listen</code><span class="sig-paren">(</span><em>addr</em>, <em>family=&lt;AddressFamily.AF_INET: 2&gt;</em>, <em>backlog=50</em>, <em>reuse_addr=True</em>, <em>reuse_port=None</em><span class="sig-paren">)</span><a class="headerlink" href="#eventlet.listen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function for opening server sockets.  This
 socket can be used in <a class="reference internal" href="#eventlet.serve" title="eventlet.serve"><code class="xref py py-func docutils literal"><span class="pre">serve()</span></code></a> or a custom <code class="docutils literal"><span class="pre">accept()</span></code> loop.</p>
 <p>Sets SO_REUSEADDR on the socket to save on annoyance.</p>
@@ -302,7 +302,7 @@ connections until the existing ones complete.</p>
         <li class="right" >
           <a href="index.html" title="Eventlet Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Eventlet 0.21.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Eventlet 0.22.0 documentation</a> &#187;</li> 
       </ul>
     </div>
 
