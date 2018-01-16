@@ -1433,7 +1433,7 @@ class HTTPConnection:
             raise
 
 try:
-    import ssl
+    from eventlet.green import ssl
 except ImportError:
     pass
 else:
