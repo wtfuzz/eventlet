@@ -477,7 +477,7 @@ class WebSocket(object):
         return from the handler method."""
         try:
             self._send_closing_frame(True)
-            self.socket.shutdown(True)
+            self.socket.shutdown(socket.SHUT_RDWR)
         except SocketError as e:
             if e.errno != errno.ENOTCONN:
                 self.log.write('{ctx} socket shutdown error: {e}'.format(ctx=self.log_context, e=e))
@@ -822,7 +822,7 @@ class RFC6455WebSocket(WebSocket):
         return from the handler method."""
         try:
             self._send_closing_frame(close_data=close_data, ignore_send_errors=True)
-            self.socket.shutdown(socket.SHUT_WR)
+            self.socket.shutdown(socket.SHUT_RDWR)
         except SocketError as e:
             if e.errno != errno.ENOTCONN:
                 self.log.write('{ctx} socket shutdown error: {e}'.format(ctx=self.log_context, e=e))
